@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { AdminHeader, FulfilmentPill, PaymentPill, formatDateTime } from "@/components/admin/admin-ui";
 import { Button } from "@/components/ui/button";
 import { FULFILMENT_LABEL, FULFILMENT_STATUSES, type FulfilmentStatus } from "@/lib/admin-schemas";
-import { adminUpdateOrderStatus } from "@/lib/admin.functions";
+import { adminConfirmTransfer, adminUpdateOrderStatus } from "@/lib/admin.functions";
 import { adminOrderQuery } from "@/lib/admin.queries";
 import { naira } from "@/lib/shop-types";
 
@@ -56,6 +56,22 @@ function OrderPage() {
   const [saving, setSaving] = useState(false);
   const updateFn = useServerFn(adminUpdateOrderStatus);
   const qc = useQueryClient();
+  const confirmFn = useServerFn(adminConfirmTransfer);
+  const [checking, setChecking] = useState(false);
+
+  async function confirmTransfer(received: boolean) {
+    if (received && !window.confirm(`Confirm ${naira.format(o.total)} has arrived in the GTBank account?`)) return;
+    setChecking(true);
+    try {
+      const res = await confirmFn({ data: { id: o.id, received } });
+      if (res.ok) toast.success(received ? "Payment confirmed — order marked as paid." : "Marked as not received. The customer can send it again.");
+      else toast.error(res.message);
+      await qc.invalidateQueries();
+    } catch {
+      toast.error("Couldn't update the payment. Please try again.");
+    }
+    setChecking(false);
+  }
 
   async function saveStatus() {
     setSaving(true);
@@ -157,9 +173,27 @@ function OrderPage() {
         </div>
 
         <aside className="grid gap-6 lg:sticky lg:top-6">
+          {o.paymentMethod === "bank_transfer" && o.paymentStatus !== "paid" && (
+            <section className="admin-box admin-box-pad grid gap-3">
+              <h2 className="admin-box-title">Bank transfer</h2>
+              {o.paymentStatus === "pending" ? (
+                <p className="text-sm">The customer says they sent <strong>{naira.format(o.total)}</strong>. Check the GTBank account for narration <strong>{o.orderNumber}</strong>.</p>
+              ) : (
+                <p className="text-sm text-muted-foreground">Waiting for the customer to transfer {naira.format(o.total)} and tap "I have made payment".</p>
+              )}
+              <div className="grid gap-2">
+                <Button className="font-bold" disabled={checking} onClick={() => confirmTransfer(true)}>
+                  {checking && <LoaderCircle className="animate-spin" aria-hidden="true" />} Payment received — mark paid
+                </Button>
+                {o.paymentStatus === "pending" && (
+                  <Button variant="outline" className="font-bold" disabled={checking} onClick={() => confirmTransfer(false)}>Not received</Button>
+                )}
+              </div>
+            </section>
+          )}
           <section className="admin-box admin-box-pad">
             <h2 className="admin-box-title">Order status</h2>
-            <p className="mt-1 text-sm text-muted-foreground">Payment status is set automatically by Paystack.</p>
+            <p className="mt-1 text-sm text-muted-foreground">Bank transfer payments are confirmed in the box above.</p>
             <div className="mt-4 flex gap-2">
               <select aria-label="Order status" className="admin-input" value={status} onChange={(e) => setStatus(e.target.value as FulfilmentStatus)}>
                 {FULFILMENT_STATUSES.map((s) => <option key={s} value={s}>{FULFILMENT_LABEL[s]}</option>)}
