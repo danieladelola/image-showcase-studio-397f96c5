@@ -339,7 +339,7 @@ function CheckoutPage() {
                     customer={customer}
                     options={options}
                     paymentsEnabled={!!config.data?.paymentsEnabled}
-                    testMode={config.data?.paymentMode === "test"}
+                    testMode={false}
                     clearCartWhenPaid={!buyMode}
                     onBack={() => goTo(2)}
                     onEdit={goTo}

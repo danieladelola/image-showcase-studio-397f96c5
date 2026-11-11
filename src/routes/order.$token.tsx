@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { AlertTriangle, Check, CheckCircle2, Clock, Copy, Landmark, LoaderCircle, RefreshCw, Send, XCircle } from "lucide-react";
+import { AlertTriangle, Check, CheckCircle2, Clock, Copy, Landmark, LoaderCircle, Send, XCircle } from "lucide-react";
 import { z } from "zod";
 
 import { PageFrame } from "@/components/site-layout";
@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { FULFILMENT_LABEL, PAYMENT_LABEL, type FulfilmentStatus, type PaymentStatus } from "@/lib/admin-schemas";
 import { cart } from "@/lib/cart";
 import { BANK_ACCOUNT } from "@/lib/bank-transfer";
-import { getOrderStatus, reportTransfer, retryPayment } from "@/lib/checkout.functions";
+import { getOrderStatus, reportTransfer } from "@/lib/checkout.functions";
 import { naira } from "@/lib/shop-types";
 
 export const Route = createFileRoute("/order/$token")({
@@ -34,9 +34,6 @@ function OrderPage() {
   const { token } = Route.useParams();
   const { reference, trxref } = Route.useSearch();
   const fetchStatus = useServerFn(getOrderStatus);
-  const retry = useServerFn(retryPayment);
-  const [retrying, setRetrying] = useState(false);
-  const [retryError, setRetryError] = useState("");
   const valid = /^[0-9a-f]{64}$/.test(token);
 
   const order = useQuery({
@@ -61,22 +58,6 @@ function OrderPage() {
       /* ignore */
     }
   }, [paid, token]);
-
-  async function tryAgain() {
-    setRetrying(true);
-    setRetryError("");
-    try {
-      const res = await retry({ data: { token } });
-      if (res.ok) {
-        window.location.assign(res.authorizationUrl);
-        return;
-      }
-      setRetryError(res.message);
-    } catch {
-      setRetryError("We couldn't restart payment. Please try again.");
-    }
-    setRetrying(false);
-  }
 
   if (!valid || (order.isSuccess && !order.data)) {
     return (
@@ -110,7 +91,6 @@ function OrderPage() {
   const o = order.data;
   const status = o.paymentStatus as PaymentStatus;
   const isTransfer = o.paymentMethod === "bank_transfer";
-  const canRetry = !isTransfer && status !== "paid" && status !== "refunded" && status !== "pending" && o.fulfilmentStatus !== "cancelled";
   const awaitingTransfer = isTransfer && (status === "unpaid" || status === "failed" || status === "cancelled") && o.fulfilmentStatus !== "cancelled";
   const Icon = status === "paid" ? CheckCircle2 : status === "pending" ? Clock : awaitingTransfer ? Landmark : XCircle;
   const heading = {
@@ -140,15 +120,6 @@ function OrderPage() {
             {status === "paid" && <p className="max-w-lg text-muted-foreground">Our team will call you to arrange {o.deliveryMethod === "pickup" ? "pickup" : "delivery"}{o.installationFee > 0 ? " and installation" : ""}.</p>}
             {isTransfer && status === "pending" && (
               <p className="max-w-lg text-muted-foreground">We've been notified. Our team will check our GTBank account and confirm your payment — usually within a few hours during business days. This page updates by itself, and we'll call you on the number you gave us.</p>
-            )}
-            {canRetry && (
-              <div className="grid justify-items-center gap-2">
-                <p className="max-w-lg text-muted-foreground">Your order is saved. You haven't been charged — you can try paying again.</p>
-                <Button className="h-12 px-7 font-bold" onClick={tryAgain} disabled={retrying}>
-                  {retrying ? <LoaderCircle className="animate-spin" aria-hidden="true" /> : <RefreshCw aria-hidden="true" />} Try payment again
-                </Button>
-                {retryError && <p role="alert" className="text-sm font-bold text-destructive">{retryError}</p>}
-              </div>
             )}
           </div>
 
