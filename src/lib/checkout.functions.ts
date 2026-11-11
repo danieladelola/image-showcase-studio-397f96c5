@@ -64,7 +64,7 @@ export const placeOrder = createServerFn({ method: "POST" })
       const priced = priceOrder(data.items, catalog, data.options, settings);
       const token = randomToken();
       const tokenHash = await sha256Hex(token);
-      await withDb((sql) =>
+      const order = await withDb((sql) =>
         sql.begin(async (tx) => {
           const [o] = await tx`
             INSERT INTO orders (customer_name, phone, email, address, city, state, notes, payment_method, payment_status,
@@ -80,6 +80,16 @@ export const placeOrder = createServerFn({ method: "POST" })
           }
           return { id: String(o!.id), orderNumber: String(o!.order_number) };
         }),
+      );
+      const { siteOrigin } = await import("./payments.server");
+      const { orderPlacedEmails, sendAll } = await import("./email.server");
+      const origin = siteOrigin();
+      await sendAll(
+        orderPlacedEmails(origin, {
+          orderNumber: order.orderNumber, customerName: data.customerName, email: data.email, phone: data.phone,
+          address: data.address, city: data.city, state: data.state, deliveryMethod: data.options.deliveryMethod, total: priced.total,
+          items: priced.items.map((i) => ({ name: i.productName, quantity: i.quantity, lineTotal: i.lineTotal })),
+        }, `${origin}/order/${token}`),
       );
       return { ok: true as const, orderToken: token };
     } catch (error) {
@@ -148,9 +158,9 @@ export const reportTransfer = createServerFn({ method: "POST" })
     const { withDb } = await import("./db.server");
     const { sha256Hex } = await import("./password");
     const hash = await sha256Hex(data.token);
-    return withDb((sql) =>
+    const result = await withDb((sql) =>
       sql.begin(async (tx) => {
-        const [o] = await tx`SELECT id, order_number, total, payment_status, status FROM orders WHERE access_token_hash = ${hash} FOR UPDATE`;
+        const [o] = await tx`SELECT id, order_number, total, payment_status, status, customer_name, phone, email FROM orders WHERE access_token_hash = ${hash} FOR UPDATE`;
         if (!o) return { ok: false as const, message: "We couldn't find that order." };
         if (o.status === "cancelled") return { ok: false as const, message: "This order was cancelled. Please contact us." };
         if (o.payment_status === "paid") return { ok: true as const };
@@ -160,7 +170,16 @@ export const reportTransfer = createServerFn({ method: "POST" })
         await tx`INSERT INTO payments (order_id, provider, reference, amount_kobo, status, channel, gateway_response)
                  VALUES (${o.id}, 'bank_transfer', ${reference}, ${Math.round(Number(o.total) * 100)}, 'pending', 'bank transfer', ${note})`;
         await tx`UPDATE orders SET payment_status = 'pending', payment_reference = ${reference}, updated_at = now() WHERE id = ${o.id}`;
-        return { ok: true as const };
+        return {
+          ok: true as const,
+          notify: { id: String(o.id), orderNumber: String(o.order_number), customerName: String(o.customer_name), phone: String(o.phone), email: String(o.email), total: Number(o.total), senderName: data.senderName },
+        };
       }),
     );
+    if (result.ok && "notify" in result && result.notify) {
+      const { siteOrigin } = await import("./payments.server");
+      const { transferReportedEmail, sendEmail } = await import("./email.server");
+      await sendEmail(transferReportedEmail(siteOrigin(), result.notify));
+    }
+    return result.ok ? { ok: true as const } : result;
   });

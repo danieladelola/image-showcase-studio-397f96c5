@@ -23,6 +23,12 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
           VALUES (${data.name}, ${data.phone}, ${data.email}, ${data.location}, ${data.propertyType},
                   ${data.systemSize || null}, ${data.powerNeeds}, ${data.budget || null})`,
       );
+      const { siteOrigin } = await import("./payments.server");
+      const { quoteEmails, sendAll } = await import("./email.server");
+      await sendAll(quoteEmails(siteOrigin(), {
+        name: data.name, email: data.email, phone: data.phone, location: data.location, message: data.powerNeeds,
+        extra: [["Property", data.propertyType], ...(data.systemSize ? [["System size", data.systemSize] as [string, string]] : []), ...(data.budget ? [["Budget", data.budget] as [string, string]] : [])],
+      }));
       return { ok: true as const, message: "Thank you. Your quote request has been sent to RUWATA." };
     } catch (error) {
       console.error("Quote request could not be saved.", error);

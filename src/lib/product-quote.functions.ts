@@ -25,8 +25,13 @@ export const submitProductQuote = createServerFn({ method: "POST" })
           INSERT INTO quote_requests (name, phone, email, location, property_type, power_needs, product_id, product_name, quantity)
           VALUES (${data.name}, ${data.phone}, ${data.email}, ${data.location}, 'Other', ${needs.length >= 3 ? needs : needs + "..."},
                   ${p.id}, ${p.name}, ${data.quantity})`;
-        return true;
+        return String(p.name);
       });
+      if (saved) {
+        const { siteOrigin } = await import("./payments.server");
+        const { quoteEmails, sendAll } = await import("./email.server");
+        await sendAll(quoteEmails(siteOrigin(), { ...data, message: data.message || "No message", productName: saved, quantity: data.quantity }));
+      }
       if (!saved) return { ok: false as const, message: "That product isn't available any more." };
       return { ok: true as const };
     } catch (error) {

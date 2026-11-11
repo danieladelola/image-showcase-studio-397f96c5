@@ -330,9 +330,9 @@ export const adminConfirmTransfer = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => z.object({ id: z.string().uuid(), received: z.boolean() }).parse(input))
   .handler(async ({ data }) => {
     const { withDb } = await adminDb();
-    return withDb((sql) =>
+    const result = await withDb((sql) =>
       sql.begin(async (tx) => {
-        const [o] = await tx`SELECT id, total, payment_status FROM orders WHERE id = ${data.id} FOR UPDATE`;
+        const [o] = await tx`SELECT id, total, payment_status, order_number, customer_name, email, delivery_method FROM orders WHERE id = ${data.id} FOR UPDATE`;
         if (!o) return { ok: false as const, message: "Order not found." };
         if (o.payment_status === "paid") return { ok: false as const, message: "This order is already paid." };
         if (!data.received) {
@@ -351,9 +351,15 @@ export const adminConfirmTransfer = createServerFn({ method: "POST" })
                    FROM (SELECT product_id, sum(quantity)::int AS qty FROM order_items WHERE order_id = ${o.id} AND product_id IS NOT NULL GROUP BY product_id) i
                    WHERE p.id = i.product_id AND p.track_stock`;
         }
-        return { ok: true as const };
+        return { ok: true as const, paid: { orderNumber: String(o.order_number), customerName: String(o.customer_name), email: String(o.email), total: Number(o.total), deliveryMethod: String(o.delivery_method) } };
       }),
     );
+    if (result.ok && "paid" in result && result.paid) {
+      const { siteOrigin } = await import("./payments.server");
+      const { paymentConfirmedEmail, sendEmail } = await import("./email.server");
+      await sendEmail(paymentConfirmedEmail(siteOrigin(), result.paid));
+    }
+    return result.ok ? { ok: true as const } : result;
   });
 
 /* ---------------- Quote requests ---------------- */
