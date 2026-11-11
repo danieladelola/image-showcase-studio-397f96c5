@@ -328,7 +328,7 @@ function ProductEditor({ initial, categories }: { initial: AdminProduct | null; 
 
           <Section title="Pricing">
             <div className="grid gap-4 sm:grid-cols-3">
-              <Field label="Regular price (₦)" name="price" errors={errors}>
+              <Field label="Regular price (₦)" name="price" errors={errors} hint="Leave empty to show “Request a Quote” instead of Add to Cart / Buy Now.">
                 <input inputMode="numeric" className="admin-input" value={form.price} onChange={(e) => set("price", e.target.value)} placeholder="e.g. 650000" />
               </Field>
               <Field label="Sale price (₦)" name="salePrice" errors={errors} hint="Optional. Must be lower than the regular price.">

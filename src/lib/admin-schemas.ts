@@ -68,9 +68,6 @@ export const productInputSchema = z
     sortOrder: z.number().int().min(0).max(10000),
   })
   .superRefine((p, ctx) => {
-    if (p.price == null) {
-      ctx.addIssue({ code: "custom", path: ["price"], message: "Enter a regular price. Every product is sold with Add to Cart and Buy Now." });
-    }
     if (p.salePrice != null && (p.price == null || p.salePrice >= p.price)) {
       ctx.addIssue({ code: "custom", path: ["salePrice"], message: "Sale price must be lower than the regular price." });
     }

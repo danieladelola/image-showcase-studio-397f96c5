@@ -204,6 +204,15 @@ const steps: Array<{ name: string; sql: string }> = [
       ON CONFLICT (slug) DO NOTHING;
     `,
   },
+  {
+    name: "2026-11-product-quote-requests",
+    sql: `
+      ALTER TABLE quote_requests ADD COLUMN IF NOT EXISTS product_id uuid REFERENCES products(id) ON DELETE SET NULL;
+      ALTER TABLE quote_requests ADD COLUMN IF NOT EXISTS product_name text;
+      ALTER TABLE quote_requests ADD COLUMN IF NOT EXISTS quantity integer;
+      ALTER TABLE quote_requests ADD COLUMN IF NOT EXISTS status text NOT NULL DEFAULT 'new';
+    `,
+  },
 ];
 
 export async function migrate(sql: Sql) {

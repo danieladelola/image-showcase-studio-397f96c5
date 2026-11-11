@@ -38,19 +38,19 @@ export function maxOrderQty(p: StockFields) {
   return p.availability === "out_of_stock" ? 0 : MAX_QTY_PER_LINE;
 }
 
-export type PurchaseState = "buy" | "unavailable";
+export type PurchaseState = "buy" | "quote" | "unavailable";
 
-/** Published, available products with a price can be bought online. */
+/** Published products with a price can be bought online; published products without a price get "Request a Quote". */
 export function purchaseState(p: PricingFields & StockFields & Pick<Product, "status">): PurchaseState {
   if (p.status !== "published") return "unavailable";
-  if (sellingPrice(p) == null) return "unavailable";
+  if (sellingPrice(p) == null) return "quote";
   return maxOrderQty(p) > 0 ? "buy" : "unavailable";
 }
 
 /** Short reason shown under disabled Add to Cart / Buy Now buttons. */
 export function unavailableReason(p: PricingFields & StockFields & Pick<Product, "status">): string {
   if (p.status !== "published") return "Not available";
-  if (sellingPrice(p) == null) return "Price coming soon";
+  if (sellingPrice(p) == null) return "Price on request";
   return STOCK_LABEL[stockState(p)] === "In stock" ? "Not available" : STOCK_LABEL[stockState(p)];
 }
 

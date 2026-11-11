@@ -1,8 +1,10 @@
 import { useNavigate } from "@tanstack/react-router";
-import { ShoppingCart, Zap } from "lucide-react";
+import { MessageSquareQuote, ShoppingCart, Zap } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { ProductQuoteDialog } from "@/components/product-quote-dialog";
 import { cart } from "@/lib/cart";
 import {
   STOCK_LABEL,
@@ -44,7 +46,7 @@ export function PriceBlock({ product: p, size = "md" }: { product: Product; size
           size === "lg" ? "text-2xl" : "text-lg",
         )}
       >
-        Price coming soon
+        Price on request
       </p>
     );
   }
@@ -102,9 +104,22 @@ export function PurchaseActions({
   layout?: "card" | "detail";
 }) {
   const navigate = useNavigate();
-  const canBuy = purchaseState(p) === "buy";
+  const state = purchaseState(p);
+  const canBuy = state === "buy";
+  const [quoteOpen, setQuoteOpen] = useState(false);
   // Cards are narrow on phones (2 per row) and on 4-per-row laptops, so stack the buttons there.
   const tall = layout === "detail" ? "h-13 text-base" : "h-10 px-2 text-sm sm:h-11 sm:px-3";
+
+  if (state === "quote") {
+    return (
+      <>
+        <Button type="button" className={cn("w-full min-w-0 whitespace-nowrap rounded-xl font-bold", tall)} onClick={() => setQuoteOpen(true)}>
+          <MessageSquareQuote aria-hidden="true" /> Request a Quote
+        </Button>
+        <ProductQuoteDialog product={p} quantity={quantity} open={quoteOpen} onOpenChange={setQuoteOpen} />
+      </>
+    );
+  }
 
   return (
     <div className="grid gap-2">
