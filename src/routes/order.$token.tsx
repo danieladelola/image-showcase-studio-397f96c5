@@ -114,7 +114,7 @@ function OrderPage() {
               Order number <strong className="text-foreground">{o.orderNumber}</strong>
             </p>
             <div className="flex flex-wrap justify-center gap-2">
-              <span className="status-pill" data-tone={status === "paid" ? "good" : status === "pending" || status === "unpaid" ? "wait" : "bad"}>Payment: {PAYMENT_LABEL[status]}</span>
+              <span className="status-pill" data-tone={status === "paid" ? "good" : status === "pending" || status === "unpaid" ? "wait" : "bad"}>Payment: {isTransfer && status === "pending" ? "Being confirmed" : PAYMENT_LABEL[status]}</span>
               {status === "paid" && <span className="status-pill" data-tone="info">Order: {FULFILMENT_LABEL[o.fulfilmentStatus as FulfilmentStatus] ?? o.fulfilmentStatus}</span>}
             </div>
             {status === "paid" && <p className="max-w-lg text-muted-foreground">Our team will call you to arrange {o.deliveryMethod === "pickup" ? "pickup" : "delivery"}{o.installationFee > 0 ? " and installation" : ""}.</p>}
