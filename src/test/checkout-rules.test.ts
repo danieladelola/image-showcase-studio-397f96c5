@@ -47,7 +47,7 @@ describe("who can buy", () => {
     expect(purchaseState(entry({ status: "draft" }))).toBe("unavailable");
     expect(purchaseState(entry({ status: "archived" }))).toBe("unavailable");
     expect(purchaseState(entry({ quoteOnly: true }))).toBe("buy");
-    expect(purchaseState(entry({ price: null }))).toBe("unavailable");
+    expect(purchaseState(entry({ price: null }))).toBe("quote");
     expect(purchaseState(entry({ trackStock: true, stockQuantity: 0 }))).toBe("unavailable");
     expect(purchaseState(entry({ availability: "out_of_stock" }))).toBe("unavailable");
   });
@@ -106,9 +106,10 @@ describe("product form rules", () => {
     expect(productInputSchema.safeParse({ ...base, salePrice: 1_100_000 }).success).toBe(false);
     expect(productInputSchema.safeParse({ ...base, salePrice: 1_000_000 }).success).toBe(true);
   });
-  it("always needs a price (there is no quote-only option)", () => {
-    expect(productInputSchema.safeParse({ ...base, price: null }).success).toBe(false);
-    expect(productInputSchema.safeParse({ ...base, price: null, quoteOnly: true }).success).toBe(false);
+  it("allows saving without a price (Request a Quote)", () => {
+    // No price is allowed: the product shows "Request a Quote".
+    expect(productInputSchema.safeParse({ ...base, price: null }).success).toBe(true);
+    expect(productInputSchema.safeParse({ ...base, price: null, salePrice: 100 }).success).toBe(false);
   });
 });
 

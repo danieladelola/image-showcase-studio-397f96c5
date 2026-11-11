@@ -8,6 +8,7 @@ import {
   adminListCategories,
   adminListOrders,
   adminListProducts,
+  adminListQuotes,
   getDashboard,
 } from "./admin.functions";
 
@@ -44,3 +45,5 @@ export function lagosDate(d = new Date()) {
 export function daysAgo(n: number, from = new Date()) {
   return lagosDate(new Date(from.getTime() - n * 86_400_000));
 }
+
+export const adminQuotesQuery = queryOptions({ queryKey: ["admin", "quotes"], queryFn: () => adminListQuotes() });

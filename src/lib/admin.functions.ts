@@ -356,6 +356,39 @@ export const adminConfirmTransfer = createServerFn({ method: "POST" })
     );
   });
 
+/* ---------------- Quote requests ---------------- */
+
+export const adminListQuotes = createServerFn({ method: "GET" }).handler(async () => {
+  const { withDb } = await adminDb();
+  return withDb(async (sql) => {
+    const rows = await sql`SELECT id, created_at, name, phone, email, location, power_needs, system_size, budget, product_id, product_name, quantity, status
+                           FROM quote_requests ORDER BY created_at DESC LIMIT 1000`;
+    return rows.map((r) => ({
+      id: String(r.id),
+      createdAt: new Date(r.created_at as string).toISOString(),
+      name: String(r.name),
+      phone: String(r.phone),
+      email: String(r.email),
+      location: String(r.location),
+      message: String(r.power_needs),
+      systemSize: (r.system_size as string | null) ?? null,
+      budget: (r.budget as string | null) ?? null,
+      productId: (r.product_id as string | null) ?? null,
+      productName: (r.product_name as string | null) ?? null,
+      quantity: r.quantity == null ? null : Number(r.quantity),
+      status: String(r.status ?? "new") as "new" | "handled",
+    }));
+  });
+});
+
+export const adminSetQuoteStatus = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => z.object({ id: z.string().uuid(), status: z.enum(["new", "handled"]) }).parse(input))
+  .handler(async ({ data }) => {
+    const { withDb } = await adminDb();
+    await withDb((sql) => sql`UPDATE quote_requests SET status = ${data.status} WHERE id = ${data.id}`);
+    return { ok: true as const };
+  });
+
 /* ---------------- Settings ---------------- */
 
 export const adminGetSettings = createServerFn({ method: "GET" }).handler(async () => {
