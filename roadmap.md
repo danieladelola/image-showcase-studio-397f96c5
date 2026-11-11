@@ -45,3 +45,8 @@
 ## Nov 6 2026
 - [x] Rebrand the news article (post details) page.
 - [x] Shorten the homepage shop heading "Solar systems, appliances and backup power."
+
+## Bank transfer checkout (Nov 11 2026)
+- [x] Checkout pays by bank transfer (GTBank, Ruwata Nig. Ltd, 0487848972) instead of Paystack.
+- [x] Order page shows bank details with copy buttons and an "I have made payment" button.
+- [x] Admin order page: "Payment received — mark paid" / "Not received".
