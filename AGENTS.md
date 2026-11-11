@@ -32,3 +32,4 @@ use the editor.
 - Keep the public-facing RUWATA site organized around shared presentation and navigation, with distinct pages for each named public URL, so every page is directly navigable and independently discoverable.
 
 - Store data lives in a self-hosted Postgres (Coolify) reached via `withDb()` in `src/lib/db.server.ts` using `DATABASE_URL`; schema and seed live in `db/` and run on container start — why: the app is deployed with Docker on Coolify, outside Lovable hosting.
+- Emails are sent through Resend directly from `src/lib/email.server.ts` (RESEND_API_KEY, RESEND_FROM_EMAIL); logo is served from `public/email/` — why: the app is hosted on Coolify outside Lovable, so the connector gateway is not used.

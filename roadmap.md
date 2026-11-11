@@ -54,4 +54,4 @@
 ## Request a Quote (Nov 11 2026)
 - [x] Admin can leave price empty; product then shows "Request a Quote" (form with product, qty, contact details).
 - [x] Quote requests saved and listed in admin → Quote requests.
-- [ ] Email quote requests and new orders to musanchina@gmail.com — waiting on the user to set up a sending email domain.
+- [x] Emails via Resend (logo included): order placed (customer+admin), transfer sent (admin), payment confirmed (customer), quote requests (admin+customer).
