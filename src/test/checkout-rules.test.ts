@@ -106,7 +106,7 @@ describe("product form rules", () => {
     expect(productInputSchema.safeParse({ ...base, salePrice: 1_100_000 }).success).toBe(false);
     expect(productInputSchema.safeParse({ ...base, salePrice: 1_000_000 }).success).toBe(true);
   });
-  it("always needs a price (there is no quote-only option)", () => {
+  it("allows saving without a price (Request a Quote)", () => {
     // No price is allowed: the product shows "Request a Quote".
     expect(productInputSchema.safeParse({ ...base, price: null }).success).toBe(true);
     expect(productInputSchema.safeParse({ ...base, price: null, salePrice: 100 }).success).toBe(false);
