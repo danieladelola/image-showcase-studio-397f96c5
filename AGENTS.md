@@ -28,3 +28,7 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+- Keep the public-facing RUWATA site organized around shared presentation and navigation, with distinct pages for each named public URL, so every page is directly navigable and independently discoverable.
+
+- Store data lives in a self-hosted Postgres (Coolify) reached via `withDb()` in `src/lib/db.server.ts` using `DATABASE_URL`; schema and seed live in `db/` and run on container start — why: the app is deployed with Docker on Coolify, outside Lovable hosting.

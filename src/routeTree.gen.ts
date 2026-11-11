@@ -10,33 +10,313 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AboutUsRouteImport } from './routes/about-us'
+import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as ContactUsRouteImport } from './routes/contact-us'
+import { Route as NewsRouteImport } from './routes/news'
+import { Route as OurImpactRouteImport } from './routes/our-impact'
+import { Route as OurProductsRouteImport } from './routes/our-products'
+import { Route as AdminAppRouteImport } from './routes/admin._app'
+import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as NewsSlugRouteImport } from './routes/news_.$slug'
+import { Route as OrderTokenRouteImport } from './routes/order.$token'
+import { Route as OurProductsSlugRouteImport } from './routes/our-products_.$slug'
+import { Route as AdminAppIndexRouteImport } from './routes/admin._app.index'
+import { Route as AdminAppCategoriesRouteImport } from './routes/admin._app.categories'
+import { Route as AdminAppSettingsRouteImport } from './routes/admin._app.settings'
+import { Route as AdminAppNewsIndexRouteImport } from './routes/admin._app.news.index'
+import { Route as AdminAppNewsIdRouteImport } from './routes/admin._app.news.$id'
+import { Route as AdminAppOrdersIndexRouteImport } from './routes/admin._app.orders.index'
+import { Route as AdminAppOrdersIdRouteImport } from './routes/admin._app.orders.$id'
+import { Route as AdminAppProductsIndexRouteImport } from './routes/admin._app.products.index'
+import { Route as AdminAppProductsIdRouteImport } from './routes/admin._app.products.$id'
+import { Route as ApiPublicImagesIdRouteImport } from './routes/api/public/images.$id'
+import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api/public/paystack.webhook'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AboutUsRoute = AboutUsRouteImport.update({
+  id: '/about-us',
+  path: '/about-us',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactUsRoute = ContactUsRouteImport.update({
+  id: '/contact-us',
+  path: '/contact-us',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsRoute = NewsRouteImport.update({
+  id: '/news',
+  path: '/news',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OurImpactRoute = OurImpactRouteImport.update({
+  id: '/our-impact',
+  path: '/our-impact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OurProductsRoute = OurProductsRouteImport.update({
+  id: '/our-products',
+  path: '/our-products',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAppRoute = AdminAppRouteImport.update({
+  id: '/admin/_app',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin/login',
+  path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsSlugRoute = NewsSlugRouteImport.update({
+  id: '/news_/$slug',
+  path: '/news/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrderTokenRoute = OrderTokenRouteImport.update({
+  id: '/order/$token',
+  path: '/order/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OurProductsSlugRoute = OurProductsSlugRouteImport.update({
+  id: '/our-products_/$slug',
+  path: '/our-products/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAppIndexRoute = AdminAppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminAppRoute,
+} as any)
+const AdminAppCategoriesRoute = AdminAppCategoriesRouteImport.update({
+  id: '/categories',
+  path: '/categories',
+  getParentRoute: () => AdminAppRoute,
+} as any)
+const AdminAppSettingsRoute = AdminAppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminAppRoute,
+} as any)
+const AdminAppNewsIndexRoute = AdminAppNewsIndexRouteImport.update({
+  id: '/news/',
+  path: '/news/',
+  getParentRoute: () => AdminAppRoute,
+} as any)
+const AdminAppNewsIdRoute = AdminAppNewsIdRouteImport.update({
+  id: '/news/$id',
+  path: '/news/$id',
+  getParentRoute: () => AdminAppRoute,
+} as any)
+const AdminAppOrdersIndexRoute = AdminAppOrdersIndexRouteImport.update({
+  id: '/orders/',
+  path: '/orders/',
+  getParentRoute: () => AdminAppRoute,
+} as any)
+const AdminAppOrdersIdRoute = AdminAppOrdersIdRouteImport.update({
+  id: '/orders/$id',
+  path: '/orders/$id',
+  getParentRoute: () => AdminAppRoute,
+} as any)
+const AdminAppProductsIndexRoute = AdminAppProductsIndexRouteImport.update({
+  id: '/products/',
+  path: '/products/',
+  getParentRoute: () => AdminAppRoute,
+} as any)
+const AdminAppProductsIdRoute = AdminAppProductsIdRouteImport.update({
+  id: '/products/$id',
+  path: '/products/$id',
+  getParentRoute: () => AdminAppRoute,
+} as any)
+const ApiPublicImagesIdRoute = ApiPublicImagesIdRouteImport.update({
+  id: '/api/public/images/$id',
+  path: '/api/public/images/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicPaystackWebhookRoute =
+  ApiPublicPaystackWebhookRouteImport.update({
+    id: '/api/public/paystack/webhook',
+    path: '/api/public/paystack/webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about-us': typeof AboutUsRoute
+  '/checkout': typeof CheckoutRoute
+  '/contact-us': typeof ContactUsRoute
+  '/news': typeof NewsRoute
+  '/our-impact': typeof OurImpactRoute
+  '/our-products': typeof OurProductsRoute
+  '/admin': typeof AdminAppRouteWithChildren
+  '/admin/login': typeof AdminLoginRoute
+  '/news/$slug': typeof NewsSlugRoute
+  '/order/$token': typeof OrderTokenRoute
+  '/our-products/$slug': typeof OurProductsSlugRoute
+  '/admin/categories': typeof AdminAppCategoriesRoute
+  '/admin/settings': typeof AdminAppSettingsRoute
+  '/admin/': typeof AdminAppIndexRoute
+  '/admin/news/$id': typeof AdminAppNewsIdRoute
+  '/admin/orders/$id': typeof AdminAppOrdersIdRoute
+  '/admin/products/$id': typeof AdminAppProductsIdRoute
+  '/api/public/images/$id': typeof ApiPublicImagesIdRoute
+  '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
+  '/admin/news/': typeof AdminAppNewsIndexRoute
+  '/admin/orders/': typeof AdminAppOrdersIndexRoute
+  '/admin/products/': typeof AdminAppProductsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about-us': typeof AboutUsRoute
+  '/checkout': typeof CheckoutRoute
+  '/contact-us': typeof ContactUsRoute
+  '/news': typeof NewsRoute
+  '/our-impact': typeof OurImpactRoute
+  '/our-products': typeof OurProductsRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/news/$slug': typeof NewsSlugRoute
+  '/order/$token': typeof OrderTokenRoute
+  '/our-products/$slug': typeof OurProductsSlugRoute
+  '/admin/categories': typeof AdminAppCategoriesRoute
+  '/admin/settings': typeof AdminAppSettingsRoute
+  '/admin': typeof AdminAppIndexRoute
+  '/admin/news/$id': typeof AdminAppNewsIdRoute
+  '/admin/orders/$id': typeof AdminAppOrdersIdRoute
+  '/admin/products/$id': typeof AdminAppProductsIdRoute
+  '/api/public/images/$id': typeof ApiPublicImagesIdRoute
+  '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
+  '/admin/news': typeof AdminAppNewsIndexRoute
+  '/admin/orders': typeof AdminAppOrdersIndexRoute
+  '/admin/products': typeof AdminAppProductsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about-us': typeof AboutUsRoute
+  '/checkout': typeof CheckoutRoute
+  '/contact-us': typeof ContactUsRoute
+  '/news': typeof NewsRoute
+  '/our-impact': typeof OurImpactRoute
+  '/our-products': typeof OurProductsRoute
+  '/admin/_app': typeof AdminAppRouteWithChildren
+  '/admin/login': typeof AdminLoginRoute
+  '/news_/$slug': typeof NewsSlugRoute
+  '/order/$token': typeof OrderTokenRoute
+  '/our-products_/$slug': typeof OurProductsSlugRoute
+  '/admin/_app/categories': typeof AdminAppCategoriesRoute
+  '/admin/_app/settings': typeof AdminAppSettingsRoute
+  '/admin/_app/': typeof AdminAppIndexRoute
+  '/admin/_app/news/$id': typeof AdminAppNewsIdRoute
+  '/admin/_app/orders/$id': typeof AdminAppOrdersIdRoute
+  '/admin/_app/products/$id': typeof AdminAppProductsIdRoute
+  '/api/public/images/$id': typeof ApiPublicImagesIdRoute
+  '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
+  '/admin/_app/news/': typeof AdminAppNewsIndexRoute
+  '/admin/_app/orders/': typeof AdminAppOrdersIndexRoute
+  '/admin/_app/products/': typeof AdminAppProductsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/about-us'
+    | '/checkout'
+    | '/contact-us'
+    | '/news'
+    | '/our-impact'
+    | '/our-products'
+    | '/admin'
+    | '/admin/login'
+    | '/news/$slug'
+    | '/order/$token'
+    | '/our-products/$slug'
+    | '/admin/categories'
+    | '/admin/settings'
+    | '/admin/'
+    | '/admin/news/$id'
+    | '/admin/orders/$id'
+    | '/admin/products/$id'
+    | '/api/public/images/$id'
+    | '/api/public/paystack/webhook'
+    | '/admin/news/'
+    | '/admin/orders/'
+    | '/admin/products/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/about-us'
+    | '/checkout'
+    | '/contact-us'
+    | '/news'
+    | '/our-impact'
+    | '/our-products'
+    | '/admin/login'
+    | '/news/$slug'
+    | '/order/$token'
+    | '/our-products/$slug'
+    | '/admin/categories'
+    | '/admin/settings'
+    | '/admin'
+    | '/admin/news/$id'
+    | '/admin/orders/$id'
+    | '/admin/products/$id'
+    | '/api/public/images/$id'
+    | '/api/public/paystack/webhook'
+    | '/admin/news'
+    | '/admin/orders'
+    | '/admin/products'
+  id:
+    | '__root__'
+    | '/'
+    | '/about-us'
+    | '/checkout'
+    | '/contact-us'
+    | '/news'
+    | '/our-impact'
+    | '/our-products'
+    | '/admin/_app'
+    | '/admin/login'
+    | '/news_/$slug'
+    | '/order/$token'
+    | '/our-products_/$slug'
+    | '/admin/_app/categories'
+    | '/admin/_app/settings'
+    | '/admin/_app/'
+    | '/admin/_app/news/$id'
+    | '/admin/_app/orders/$id'
+    | '/admin/_app/products/$id'
+    | '/api/public/images/$id'
+    | '/api/public/paystack/webhook'
+    | '/admin/_app/news/'
+    | '/admin/_app/orders/'
+    | '/admin/_app/products/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutUsRoute: typeof AboutUsRoute
+  CheckoutRoute: typeof CheckoutRoute
+  ContactUsRoute: typeof ContactUsRoute
+  NewsRoute: typeof NewsRoute
+  OurImpactRoute: typeof OurImpactRoute
+  OurProductsRoute: typeof OurProductsRoute
+  AdminAppRoute: typeof AdminAppRouteWithChildren
+  AdminLoginRoute: typeof AdminLoginRoute
+  NewsSlugRoute: typeof NewsSlugRoute
+  OrderTokenRoute: typeof OrderTokenRoute
+  OurProductsSlugRoute: typeof OurProductsSlugRoute
+  ApiPublicImagesIdRoute: typeof ApiPublicImagesIdRoute
+  ApiPublicPaystackWebhookRoute: typeof ApiPublicPaystackWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +328,206 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/about-us': {
+      id: '/about-us'
+      path: '/about-us'
+      fullPath: '/about-us'
+      preLoaderRoute: typeof AboutUsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact-us': {
+      id: '/contact-us'
+      path: '/contact-us'
+      fullPath: '/contact-us'
+      preLoaderRoute: typeof ContactUsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/news': {
+      id: '/news'
+      path: '/news'
+      fullPath: '/news'
+      preLoaderRoute: typeof NewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/our-impact': {
+      id: '/our-impact'
+      path: '/our-impact'
+      fullPath: '/our-impact'
+      preLoaderRoute: typeof OurImpactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/our-products': {
+      id: '/our-products'
+      path: '/our-products'
+      fullPath: '/our-products'
+      preLoaderRoute: typeof OurProductsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/_app': {
+      id: '/admin/_app'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminAppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/admin/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/news_/$slug': {
+      id: '/news_/$slug'
+      path: '/news/$slug'
+      fullPath: '/news/$slug'
+      preLoaderRoute: typeof NewsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/order/$token': {
+      id: '/order/$token'
+      path: '/order/$token'
+      fullPath: '/order/$token'
+      preLoaderRoute: typeof OrderTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/our-products_/$slug': {
+      id: '/our-products_/$slug'
+      path: '/our-products/$slug'
+      fullPath: '/our-products/$slug'
+      preLoaderRoute: typeof OurProductsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/_app/': {
+      id: '/admin/_app/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminAppIndexRouteImport
+      parentRoute: typeof AdminAppRoute
+    }
+    '/admin/_app/categories': {
+      id: '/admin/_app/categories'
+      path: '/categories'
+      fullPath: '/admin/categories'
+      preLoaderRoute: typeof AdminAppCategoriesRouteImport
+      parentRoute: typeof AdminAppRoute
+    }
+    '/admin/_app/settings': {
+      id: '/admin/_app/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminAppSettingsRouteImport
+      parentRoute: typeof AdminAppRoute
+    }
+    '/admin/_app/news/': {
+      id: '/admin/_app/news/'
+      path: '/news'
+      fullPath: '/admin/news/'
+      preLoaderRoute: typeof AdminAppNewsIndexRouteImport
+      parentRoute: typeof AdminAppRoute
+    }
+    '/admin/_app/news/$id': {
+      id: '/admin/_app/news/$id'
+      path: '/news/$id'
+      fullPath: '/admin/news/$id'
+      preLoaderRoute: typeof AdminAppNewsIdRouteImport
+      parentRoute: typeof AdminAppRoute
+    }
+    '/admin/_app/orders/': {
+      id: '/admin/_app/orders/'
+      path: '/orders'
+      fullPath: '/admin/orders/'
+      preLoaderRoute: typeof AdminAppOrdersIndexRouteImport
+      parentRoute: typeof AdminAppRoute
+    }
+    '/admin/_app/orders/$id': {
+      id: '/admin/_app/orders/$id'
+      path: '/orders/$id'
+      fullPath: '/admin/orders/$id'
+      preLoaderRoute: typeof AdminAppOrdersIdRouteImport
+      parentRoute: typeof AdminAppRoute
+    }
+    '/admin/_app/products/': {
+      id: '/admin/_app/products/'
+      path: '/products'
+      fullPath: '/admin/products/'
+      preLoaderRoute: typeof AdminAppProductsIndexRouteImport
+      parentRoute: typeof AdminAppRoute
+    }
+    '/admin/_app/products/$id': {
+      id: '/admin/_app/products/$id'
+      path: '/products/$id'
+      fullPath: '/admin/products/$id'
+      preLoaderRoute: typeof AdminAppProductsIdRouteImport
+      parentRoute: typeof AdminAppRoute
+    }
+    '/api/public/images/$id': {
+      id: '/api/public/images/$id'
+      path: '/api/public/images/$id'
+      fullPath: '/api/public/images/$id'
+      preLoaderRoute: typeof ApiPublicImagesIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/paystack/webhook': {
+      id: '/api/public/paystack/webhook'
+      path: '/api/public/paystack/webhook'
+      fullPath: '/api/public/paystack/webhook'
+      preLoaderRoute: typeof ApiPublicPaystackWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
+interface AdminAppRouteChildren {
+  AdminAppCategoriesRoute: typeof AdminAppCategoriesRoute
+  AdminAppSettingsRoute: typeof AdminAppSettingsRoute
+  AdminAppIndexRoute: typeof AdminAppIndexRoute
+  AdminAppNewsIdRoute: typeof AdminAppNewsIdRoute
+  AdminAppOrdersIdRoute: typeof AdminAppOrdersIdRoute
+  AdminAppProductsIdRoute: typeof AdminAppProductsIdRoute
+  AdminAppNewsIndexRoute: typeof AdminAppNewsIndexRoute
+  AdminAppOrdersIndexRoute: typeof AdminAppOrdersIndexRoute
+  AdminAppProductsIndexRoute: typeof AdminAppProductsIndexRoute
+}
+
+const AdminAppRouteChildren: AdminAppRouteChildren = {
+  AdminAppCategoriesRoute: AdminAppCategoriesRoute,
+  AdminAppSettingsRoute: AdminAppSettingsRoute,
+  AdminAppIndexRoute: AdminAppIndexRoute,
+  AdminAppNewsIdRoute: AdminAppNewsIdRoute,
+  AdminAppOrdersIdRoute: AdminAppOrdersIdRoute,
+  AdminAppProductsIdRoute: AdminAppProductsIdRoute,
+  AdminAppNewsIndexRoute: AdminAppNewsIndexRoute,
+  AdminAppOrdersIndexRoute: AdminAppOrdersIndexRoute,
+  AdminAppProductsIndexRoute: AdminAppProductsIndexRoute,
+}
+
+const AdminAppRouteWithChildren = AdminAppRoute._addFileChildren(
+  AdminAppRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutUsRoute: AboutUsRoute,
+  CheckoutRoute: CheckoutRoute,
+  ContactUsRoute: ContactUsRoute,
+  NewsRoute: NewsRoute,
+  OurImpactRoute: OurImpactRoute,
+  OurProductsRoute: OurProductsRoute,
+  AdminAppRoute: AdminAppRouteWithChildren,
+  AdminLoginRoute: AdminLoginRoute,
+  NewsSlugRoute: NewsSlugRoute,
+  OrderTokenRoute: OrderTokenRoute,
+  OurProductsSlugRoute: OurProductsSlugRoute,
+  ApiPublicImagesIdRoute: ApiPublicImagesIdRoute,
+  ApiPublicPaystackWebhookRoute: ApiPublicPaystackWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

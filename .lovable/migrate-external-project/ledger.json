@@ -1,0 +1,37 @@
+[
+  {
+    "capability": "code, images, tests, Docker/Coolify files",
+    "source": "github:danieladelola/image-showcase-studio-283a9ea4",
+    "outcome": "copied as-is (same Lovable TanStack template versions)",
+    "status": "verified",
+    "next_action": null
+  },
+  {
+    "capability": "database (self-hosted Postgres on Coolify)",
+    "source": "DATABASE_URL / DATABASE_SSL",
+    "outcome": "kept user's own database (prior user choice recorded in source)",
+    "status": "verified",
+    "next_action": null
+  },
+  {
+    "capability": "existing records (catalogue, orders, posts, admin users)",
+    "source": "user's Postgres",
+    "outcome": "kept in place",
+    "status": "verified",
+    "next_action": null
+  },
+  {
+    "capability": "admin sign-in, checkout, newsletter, quote form",
+    "source": "src/lib/*.functions.ts",
+    "outcome": "preserved",
+    "status": "pending",
+    "next_action": "User tries admin sign-in and a test order"
+  },
+  {
+    "capability": "Paystack payments + webhook",
+    "source": "PAYSTACK_SECRET_KEY, /api/public/paystack/webhook",
+    "outcome": "preserved",
+    "status": "pending",
+    "next_action": "User adds Paystack test key when ready"
+  }
+]
