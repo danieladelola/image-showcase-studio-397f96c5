@@ -87,7 +87,7 @@ export function ProductQuoteDialog({ product, quantity, open, onOpenChange }: { 
               <textarea id="pq-message" rows={3} className="form-control" value={form.message} onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))} />
             </label>
             {error && <p role="alert" className="text-sm font-bold text-destructive">{error}</p>}
-            <Button type="submit" className="sticky bottom-0 h-12 w-full font-bold" disabled={sending}>
+            <Button type="submit" className="h-12 w-full font-bold" disabled={sending}>
               {sending ? <LoaderCircle className="animate-spin" aria-hidden="true" /> : <Send aria-hidden="true" />} Send quote request
             </Button>
           </form>
