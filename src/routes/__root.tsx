@@ -10,8 +10,10 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
+import { Toaster } from "@/components/ui/sonner";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { isStaleChunkError, reloadForStaleChunk } from "../lib/stale-chunk";
 
 function NotFoundComponent() {
   return (
@@ -39,6 +41,7 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
+    if (isStaleChunkError(error) && reloadForStaleChunk()) return;
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
   }, [error]);
 
@@ -75,27 +78,35 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
-    // Replace these placeholders with the app's name and description when first building the app.
-    // Each content route, / included, must still set its own head(). Never add og:image or
-    // twitter:image here: every page without its own would inherit the root's preview image.
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
+      { name: "author", content: "RUWATA" },
+      { name: "application-name", content: "RUWATA Solar" },
+      { name: "theme-color", content: "#0a9d3c" },
+      { name: "format-detection", content: "telephone=no" },
+      {
+        name: "keywords",
+        content:
+          "RUWATA, solar power Nigeria, solar installation, solar panels, inverters, lithium batteries, solar energy systems, off-grid solar, home solar, business solar, air conditioners, freezers, TVs, generators, pumping machines, solar generators",
+      },
+      { property: "og:site_name", content: "RUWATA Solar" },
+      { property: "og:locale", content: "en_NG" },
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: "/favicon.png", type: "image/png", sizes: "64x64" },
+      { rel: "icon", href: "/favicon.ico", sizes: "any" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap",
+      },
     ],
   }),
   shellComponent: RootShell,
@@ -121,10 +132,19 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
+  useEffect(() => {
+    const onPreloadError = (event: Event) => {
+      if (reloadForStaleChunk()) event.preventDefault();
+    };
+    window.addEventListener("vite:preloadError", onPreloadError);
+    return () => window.removeEventListener("vite:preloadError", onPreloadError);
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
+      <Toaster position="top-center" closeButton />
     </QueryClientProvider>
   );
 }
