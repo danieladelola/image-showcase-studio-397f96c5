@@ -53,7 +53,7 @@ function QuotesPage() {
         ))}
       </div>
       {shown.length === 0 ? (
-        <EmptyState icon={MessageSquareQuote} title="No quote requests here" description="Requests from “Request a Quote” buttons and the quote form appear here." />
+        <div className="admin-box"><EmptyState icon={<MessageSquareQuote className="size-5" aria-hidden="true" />} title="No quote requests here">Requests from “Request a Quote” buttons and the quote form appear here.</EmptyState></div>
       ) : (
         <div className="grid gap-4">
           {shown.map((q) => (

@@ -23,6 +23,7 @@ import { Route as OrderTokenRouteImport } from './routes/order.$token'
 import { Route as OurProductsSlugRouteImport } from './routes/our-products_.$slug'
 import { Route as AdminAppIndexRouteImport } from './routes/admin._app.index'
 import { Route as AdminAppCategoriesRouteImport } from './routes/admin._app.categories'
+import { Route as AdminAppQuotesRouteImport } from './routes/admin._app.quotes'
 import { Route as AdminAppSettingsRouteImport } from './routes/admin._app.settings'
 import { Route as AdminAppNewsIndexRouteImport } from './routes/admin._app.news.index'
 import { Route as AdminAppNewsIdRouteImport } from './routes/admin._app.news.$id'
@@ -103,6 +104,11 @@ const AdminAppCategoriesRoute = AdminAppCategoriesRouteImport.update({
   path: '/categories',
   getParentRoute: () => AdminAppRoute,
 } as any)
+const AdminAppQuotesRoute = AdminAppQuotesRouteImport.update({
+  id: '/quotes',
+  path: '/quotes',
+  getParentRoute: () => AdminAppRoute,
+} as any)
 const AdminAppSettingsRoute = AdminAppSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -164,6 +170,7 @@ export interface FileRoutesByFullPath {
   '/order/$token': typeof OrderTokenRoute
   '/our-products/$slug': typeof OurProductsSlugRoute
   '/admin/categories': typeof AdminAppCategoriesRoute
+  '/admin/quotes': typeof AdminAppQuotesRoute
   '/admin/settings': typeof AdminAppSettingsRoute
   '/admin/': typeof AdminAppIndexRoute
   '/admin/news/$id': typeof AdminAppNewsIdRoute
@@ -188,6 +195,7 @@ export interface FileRoutesByTo {
   '/order/$token': typeof OrderTokenRoute
   '/our-products/$slug': typeof OurProductsSlugRoute
   '/admin/categories': typeof AdminAppCategoriesRoute
+  '/admin/quotes': typeof AdminAppQuotesRoute
   '/admin/settings': typeof AdminAppSettingsRoute
   '/admin': typeof AdminAppIndexRoute
   '/admin/news/$id': typeof AdminAppNewsIdRoute
@@ -214,6 +222,7 @@ export interface FileRoutesById {
   '/order/$token': typeof OrderTokenRoute
   '/our-products_/$slug': typeof OurProductsSlugRoute
   '/admin/_app/categories': typeof AdminAppCategoriesRoute
+  '/admin/_app/quotes': typeof AdminAppQuotesRoute
   '/admin/_app/settings': typeof AdminAppSettingsRoute
   '/admin/_app/': typeof AdminAppIndexRoute
   '/admin/_app/news/$id': typeof AdminAppNewsIdRoute
@@ -241,6 +250,7 @@ export interface FileRouteTypes {
     | '/order/$token'
     | '/our-products/$slug'
     | '/admin/categories'
+    | '/admin/quotes'
     | '/admin/settings'
     | '/admin/'
     | '/admin/news/$id'
@@ -265,6 +275,7 @@ export interface FileRouteTypes {
     | '/order/$token'
     | '/our-products/$slug'
     | '/admin/categories'
+    | '/admin/quotes'
     | '/admin/settings'
     | '/admin'
     | '/admin/news/$id'
@@ -290,6 +301,7 @@ export interface FileRouteTypes {
     | '/order/$token'
     | '/our-products_/$slug'
     | '/admin/_app/categories'
+    | '/admin/_app/quotes'
     | '/admin/_app/settings'
     | '/admin/_app/'
     | '/admin/_app/news/$id'
@@ -419,6 +431,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAppCategoriesRouteImport
       parentRoute: typeof AdminAppRoute
     }
+    '/admin/_app/quotes': {
+      id: '/admin/_app/quotes'
+      path: '/quotes'
+      fullPath: '/admin/quotes'
+      preLoaderRoute: typeof AdminAppQuotesRouteImport
+      parentRoute: typeof AdminAppRoute
+    }
     '/admin/_app/settings': {
       id: '/admin/_app/settings'
       path: '/settings'
@@ -487,6 +506,7 @@ declare module '@tanstack/react-router' {
 
 interface AdminAppRouteChildren {
   AdminAppCategoriesRoute: typeof AdminAppCategoriesRoute
+  AdminAppQuotesRoute: typeof AdminAppQuotesRoute
   AdminAppSettingsRoute: typeof AdminAppSettingsRoute
   AdminAppIndexRoute: typeof AdminAppIndexRoute
   AdminAppNewsIdRoute: typeof AdminAppNewsIdRoute
@@ -499,6 +519,7 @@ interface AdminAppRouteChildren {
 
 const AdminAppRouteChildren: AdminAppRouteChildren = {
   AdminAppCategoriesRoute: AdminAppCategoriesRoute,
+  AdminAppQuotesRoute: AdminAppQuotesRoute,
   AdminAppSettingsRoute: AdminAppSettingsRoute,
   AdminAppIndexRoute: AdminAppIndexRoute,
   AdminAppNewsIdRoute: AdminAppNewsIdRoute,
