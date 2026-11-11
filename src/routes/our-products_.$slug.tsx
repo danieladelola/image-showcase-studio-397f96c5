@@ -161,7 +161,7 @@ function ProductDetail({ product: p }: { product: Product }) {
 
               <div className="pd-trust">
                 <div className="pd-trust-item"><Truck aria-hidden="true" /><strong>Delivery or pickup</strong><span>Options shown at checkout</span></div>
-                <div className="pd-trust-item"><ShieldCheck aria-hidden="true" /><strong>Secure payment</strong><span>Guest checkout via Paystack</span></div>
+                <div className="pd-trust-item"><ShieldCheck aria-hidden="true" /><strong>Secure payment</strong><span>Pay by bank transfer</span></div>
                 <div className="pd-trust-item">
                   <Wrench aria-hidden="true" />
                   <strong>Installation</strong>
