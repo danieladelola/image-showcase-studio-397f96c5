@@ -1821,3 +1821,31 @@
   transition: background-color 150ms, color 150ms, border-color 150ms;
   &:hover { background: var(--color-brand); border-color: var(--color-brand); color: var(--color-primary-foreground); }
 }
+
+/* Quote pop-up: bottom sheet on phones, centred card from small tablets up. */
+@utility quote-sheet {
+  top: auto !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  max-width: 100% !important;
+  max-height: 92dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  transform: none !important;
+  translate: none !important;
+  border-radius: 1.5rem 1.5rem 0 0;
+  padding: 1.25rem 1rem 1rem;
+  &[data-state="open"] { animation: quote-sheet-up 260ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+  @media (min-width: 640px) {
+    top: 50% !important;
+    bottom: auto !important;
+    left: 50% !important;
+    max-width: 32rem !important;
+    max-height: 90dvh;
+    translate: -50% -50% !important;
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    &[data-state="open"] { animation: none; }
+  }
+}
+@keyframes quote-sheet-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
