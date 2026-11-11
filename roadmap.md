@@ -50,3 +50,8 @@
 - [x] Checkout pays by bank transfer (GTBank, Ruwata Nig. Ltd, 0487848972) instead of Paystack.
 - [x] Order page shows bank details with copy buttons and an "I have made payment" button.
 - [x] Admin order page: "Payment received — mark paid" / "Not received".
+
+## Request a Quote (Nov 11 2026)
+- [x] Admin can leave price empty; product then shows "Request a Quote" (form with product, qty, contact details).
+- [x] Quote requests saved and listed in admin → Quote requests.
+- [ ] Email quote requests and new orders to musanchina@gmail.com — waiting on the user to set up a sending email domain.
