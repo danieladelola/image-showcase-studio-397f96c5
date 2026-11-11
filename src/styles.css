@@ -1832,6 +1832,7 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   transform: none;
+  translate: none;
   border-radius: 1.5rem 1.5rem 0 0;
   padding: 1.25rem 1rem 1rem;
   &[data-state="open"] { animation: quote-sheet-up 260ms cubic-bezier(0.2, 0.8, 0.2, 1); }
@@ -1841,7 +1842,7 @@
     left: 50%;
     max-width: 32rem;
     max-height: 90dvh;
-    transform: translate(-50%, -50%);
+    translate: -50% -50%;
     border-radius: 1.25rem;
     padding: 1.5rem;
     &[data-state="open"] { animation: none; }
