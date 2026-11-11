@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link, Outlet, redirect, useLocation, useNavigate, type ErrorComponentProps } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { ExternalLink, FolderTree, LayoutDashboard, LogOut, Menu, Newspaper, Package, Settings, ShoppingBag, X } from "lucide-react";
+import { ExternalLink, FolderTree, LayoutDashboard, LogOut, Menu, MessageSquareQuote, Newspaper, Package, Settings, ShoppingBag, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { adminSignOut } from "@/lib/admin-auth.functions";
@@ -24,6 +24,7 @@ const NAV = [
   { to: "/admin/products", label: "Products", Icon: Package, exact: false },
   { to: "/admin/categories", label: "Categories", Icon: FolderTree, exact: false },
   { to: "/admin/orders", label: "Orders", Icon: ShoppingBag, exact: false },
+  { to: "/admin/quotes", label: "Quote requests", Icon: MessageSquareQuote, exact: false },
   { to: "/admin/news", label: "News", Icon: Newspaper, exact: false },
   { to: "/admin/settings", label: "Settings", Icon: Settings, exact: false },
 ] as const;
