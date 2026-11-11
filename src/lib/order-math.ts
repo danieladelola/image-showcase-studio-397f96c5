@@ -36,6 +36,7 @@ export function priceOrder(lines: RequestedLine[], catalog: Map<string, CatalogE
     if (!p) throw new OrderError("A product in your cart is no longer available.");
     const state = purchaseState(p);
     if (state === "unavailable") throw new OrderError(`${p.name} is not available right now.`);
+    if (state === "quote") throw new OrderError(`${p.name} has no price yet. Please request a quote instead.`);
     const max = maxOrderQty(p);
     if (!Number.isInteger(quantity) || quantity < 1) throw new OrderError("Quantity must be at least 1.");
     if (quantity > max) throw new OrderError(`Only ${max} of ${p.name} can be ordered right now.`);

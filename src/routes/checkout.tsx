@@ -116,7 +116,7 @@ function CheckoutPage() {
     if (!products.data) return [];
     if (!l.product) return [{ id: l.productId, text: `${l.name} is no longer available. Please remove it.` }];
     const state = purchaseState(l.product);
-    if (state === "unavailable") return [{ id: l.productId, text: `${l.name} is not available right now. Please remove it.` }];
+    if (state !== "buy") return [{ id: l.productId, text: `${l.name} is not available to buy online right now. Please remove it.` }];
     if (l.quantity > maxOrderQty(l.product)) return [{ id: l.productId, text: `Only ${maxOrderQty(l.product)} of ${l.name} available.` }];
     return [];
   });
