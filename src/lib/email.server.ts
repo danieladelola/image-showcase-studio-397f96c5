@@ -98,7 +98,7 @@ export function orderPlacedEmails(origin: string, o: OrderEmailData, orderUrl: s
   ];
 }
 
-export function transferReportedEmail(origin: string, o: { id: string; orderNumber: string; customerName: string; phone: string; email: string; total: number; senderName?: string }) {
+export function transferReportedEmail(origin: string, o: { id: string; orderNumber: string; customerName: string; phone: string; email: string; total: number; senderName?: string | undefined }) {
   return {
     to: ADMIN_EMAIL,
     replyTo: o.email,
@@ -120,7 +120,7 @@ export function paymentConfirmedEmail(origin: string, o: { orderNumber: string; 
   };
 }
 
-export type QuoteEmailData = { name: string; email: string; phone: string; location: string; message: string; productName?: string | null; quantity?: number | null; extra?: Array<[string, string]> };
+export type QuoteEmailData = { name: string; email: string; phone: string; location: string; message: string; productName?: string | null | undefined; quantity?: number | null | undefined; extra?: Array<[string, string]> };
 
 export function quoteEmails(origin: string, q: QuoteEmailData) {
   const what = q.productName ? `${q.productName}${q.quantity ? ` (qty ${q.quantity})` : ""}` : "a solar system";
