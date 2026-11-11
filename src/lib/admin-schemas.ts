@@ -102,7 +102,7 @@ export const FULFILMENT_LABEL: Record<FulfilmentStatus, string> = {
 };
 export const PAYMENT_LABEL: Record<PaymentStatus, string> = {
   unpaid: "Unpaid",
-  pending: "Awaiting payment",
+  pending: "Transfer sent – check bank",
   paid: "Paid",
   failed: "Failed",
   cancelled: "Not completed",

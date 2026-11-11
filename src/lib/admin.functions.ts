@@ -325,6 +325,37 @@ export const adminUpdateOrderStatus = createServerFn({ method: "POST" })
     return { ok: true as const };
   });
 
+/** Team checked the bank account: either the transfer arrived (order paid, stock deducted once) or it didn't. */
+export const adminConfirmTransfer = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => z.object({ id: z.string().uuid(), received: z.boolean() }).parse(input))
+  .handler(async ({ data }) => {
+    const { withDb } = await adminDb();
+    return withDb((sql) =>
+      sql.begin(async (tx) => {
+        const [o] = await tx`SELECT id, total, payment_status FROM orders WHERE id = ${data.id} FOR UPDATE`;
+        if (!o) return { ok: false as const, message: "Order not found." };
+        if (o.payment_status === "paid") return { ok: false as const, message: "This order is already paid." };
+        if (!data.received) {
+          await tx`UPDATE payments SET status = 'failed', gateway_response = 'Not received in bank account', verified_at = now(), updated_at = now()
+                   WHERE order_id = ${o.id} AND provider = 'bank_transfer' AND status = 'pending'`;
+          await tx`UPDATE orders SET payment_status = 'unpaid', updated_at = now() WHERE id = ${o.id}`;
+          return { ok: true as const };
+        }
+        await tx`UPDATE payments SET status = 'success', verified_at = now(), updated_at = now()
+                 WHERE order_id = ${o.id} AND provider = 'bank_transfer' AND status = 'pending'`;
+        await tx`UPDATE orders SET payment_status = 'paid', paid_at = now(), amount_paid = ${Number(o.total)},
+                   status = CASE WHEN status = 'pending' THEN 'confirmed' ELSE status END, updated_at = now() WHERE id = ${o.id}`;
+        const claimed = await tx`UPDATE orders SET stock_deducted = true WHERE id = ${o.id} AND NOT stock_deducted RETURNING id`;
+        if (claimed.length) {
+          await tx`UPDATE products p SET stock_quantity = GREATEST(0, p.stock_quantity - i.qty), updated_at = now()
+                   FROM (SELECT product_id, sum(quantity)::int AS qty FROM order_items WHERE order_id = ${o.id} AND product_id IS NOT NULL GROUP BY product_id) i
+                   WHERE p.id = i.product_id AND p.track_stock`;
+        }
+        return { ok: true as const };
+      }),
+    );
+  });
+
 /* ---------------- Settings ---------------- */
 
 export const adminGetSettings = createServerFn({ method: "GET" }).handler(async () => {
