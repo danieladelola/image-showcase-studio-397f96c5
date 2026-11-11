@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { AlertTriangle, ArrowLeft, ArrowRight, Check, CreditCard, LoaderCircle, Lock, Minus, Package, Plus, ShoppingBag, Store, Trash2, Truck, Wrench } from "lucide-react";
+import { AlertTriangle, ArrowLeft, ArrowRight, Check, Landmark, LoaderCircle, Lock, Minus, Package, Plus, ShoppingBag, Store, Trash2, Truck, Wrench } from "lucide-react";
 import { z } from "zod";
 
 import { PageFrame } from "@/components/site-layout";
@@ -26,10 +26,10 @@ export const Route = createFileRoute("/checkout")({
   head: () => ({
     meta: [
       { title: "Checkout | RUWATA Solar" },
-      { name: "description", content: "Review your cart, choose delivery or installation, and pay securely with Paystack — no account needed." },
+      { name: "description", content: "Review your cart, choose delivery or installation, and pay by bank transfer — no account needed." },
       { name: "robots", content: "noindex" },
       { property: "og:title", content: "Checkout | RUWATA Solar" },
-      { property: "og:description", content: "Guest checkout for RUWATA solar products with secure Paystack payment." },
+      { property: "og:description", content: "Guest checkout for RUWATA solar products paid by bank transfer." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -339,7 +339,7 @@ function CheckoutPage() {
                     customer={customer}
                     options={options}
                     paymentsEnabled={!!config.data?.paymentsEnabled}
-                    testMode={config.data?.paymentMode === "test"}
+                    testMode={false}
                     clearCartWhenPaid={!buyMode}
                     onBack={() => goTo(2)}
                     onEdit={goTo}
@@ -410,7 +410,7 @@ function OrderSummary({ lines, estimate, step, options }: { lines: Line[]; estim
           <dd className="font-heading text-2xl font-semibold">{estimate ? naira.format(estimate.total) : "—"}</dd>
         </div>
       </dl>
-      <p className="mt-4 flex items-center gap-2 text-xs text-muted-foreground"><Lock className="size-3.5" aria-hidden="true" /> Payments are processed securely by Paystack.</p>
+      <p className="mt-4 flex items-center gap-2 text-xs text-muted-foreground"><Lock className="size-3.5" aria-hidden="true" /> Pay by bank transfer to Ruwata Nig. Ltd (GTBank) after placing your order.</p>
     </aside>
   );
 }
@@ -437,13 +437,14 @@ function ReviewStep({ lines, customer, options, paymentsEnabled, testMode, clear
     try {
       const res = await place({ data: { ...customerSchema.parse(customer), items, options } });
       if (res.ok) {
-        if (clearCartWhenPaid) sessionStorage.setItem("ruwata-clear-cart-for", res.orderToken);
-        window.location.assign(res.authorizationUrl);
+        if (clearCartWhenPaid) cart.clear();
+        sessionStorage.removeItem("ruwata-checkout-details");
+        window.location.assign(`/order/${res.orderToken}`);
         return;
       }
       setError(res.message);
     } catch {
-      setError("We couldn't start your payment. Please try again.");
+      setError("We couldn't place your order. Please try again.");
     }
     setPaying(false);
     onFailed();
@@ -500,16 +501,17 @@ function ReviewStep({ lines, customer, options, paymentsEnabled, testMode, clear
               <p><strong>Online payment isn't available yet.</strong> Please <Link to="/contact-us" className="font-bold text-brand underline">contact us</Link> to complete this order — we'll confirm it with you directly.</p>
             </div>
           )}
-          {paymentsEnabled && testMode && (
-            <p className="mt-6 text-xs font-bold text-muted-foreground">Test mode: no real money will be charged.</p>
-          )}
+          <div className="mt-6 flex gap-3 rounded-xl border border-border bg-accent/60 p-4 text-sm">
+            <Landmark className="size-5 shrink-0 text-brand" aria-hidden="true" />
+            <p><strong>Payment by bank transfer.</strong> Place your order and we'll show you our GTBank account details and the exact amount. After you transfer, tap <strong>"I have made payment"</strong> and our team will confirm it.</p>
+          </div>
           {error && <p role="alert" className="mt-4 rounded-xl border border-destructive/40 p-3 text-sm font-bold text-destructive">{error}</p>}
         </>
       )}
       <div className="mt-6 flex flex-col-reverse gap-3 border-t border-border pt-5 sm:flex-row sm:justify-between">
         <Button type="button" variant="ghost" className="font-bold" onClick={onBack} disabled={paying}><ArrowLeft aria-hidden="true" /> Back</Button>
         <Button className="h-12 px-7 font-bold" disabled={!paymentsEnabled || paying || !r?.ok} onClick={pay}>
-          {paying ? <><LoaderCircle className="animate-spin" aria-hidden="true" /> Opening Paystack…</> : <><CreditCard aria-hidden="true" /> {r?.ok ? `Pay ${naira.format(r.total)}` : "Pay now"}</>}
+          {paying ? <><LoaderCircle className="animate-spin" aria-hidden="true" /> Placing order…</> : <><Landmark aria-hidden="true" /> {r?.ok ? `Place order · ${naira.format(r.total)}` : "Place order"}</>}
         </Button>
       </div>
     </div>

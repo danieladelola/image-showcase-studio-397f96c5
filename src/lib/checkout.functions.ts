@@ -18,10 +18,8 @@ async function loadCatalog(ids: string[]) {
 export const getCheckoutConfig = createServerFn({ method: "GET" }).handler(async () => {
   const { withDb } = await import("./db.server");
   const { loadSettings } = await import("./catalog.server");
-  const { paystackSecret } = await import("./payments.server");
-  const { paystackMode } = await import("./paystack");
   const settings = await withDb(loadSettings);
-  return { settings, paymentsEnabled: !!paystackSecret(), paymentMode: paystackMode(paystackSecret()) };
+  return { settings, paymentsEnabled: true, paymentMode: "live" as const };
 });
 
 /** Current products for the lines in a cart, so checkout always shows live prices and stock. */
@@ -54,27 +52,25 @@ export const quoteCheckout = createServerFn({ method: "POST" })
     }
   });
 
-/** Saves the order (with price snapshots) and then opens a Paystack payment for its total. */
+/** Saves the order (with price snapshots). The customer then pays by bank transfer on the order page. */
 export const placeOrder = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => checkoutSchema.parse(input))
   .handler(async ({ data }) => {
     const { withDb } = await import("./db.server");
-    const { priceOrder, OrderError, toKobo } = await import("./order-math");
-    const { paystackSecret, siteOrigin, startPayment } = await import("./payments.server");
+    const { priceOrder, OrderError } = await import("./order-math");
     const { randomToken, sha256Hex } = await import("./password");
-    if (!paystackSecret()) return { ok: false as const, message: "Online payment isn't available yet. Please contact us to complete your order." };
     try {
       const { catalog, settings } = await loadCatalog(data.items.map((i) => i.productId));
       const priced = priceOrder(data.items, catalog, data.options, settings);
       const token = randomToken();
       const tokenHash = await sha256Hex(token);
-      const order = await withDb((sql) =>
+      await withDb((sql) =>
         sql.begin(async (tx) => {
           const [o] = await tx`
             INSERT INTO orders (customer_name, phone, email, address, city, state, notes, payment_method, payment_status,
               delivery_method, delivery_fee, installation_requested, installation_fee, subtotal, total, access_token_hash)
             VALUES (${data.customerName}, ${data.phone}, ${data.email}, ${data.address}, ${data.city}, ${data.state},
-              ${data.notes || null}, 'paystack', 'unpaid', ${data.options.deliveryMethod}, ${priced.deliveryFee},
+              ${data.notes || null}, 'bank_transfer', 'unpaid', ${data.options.deliveryMethod}, ${priced.deliveryFee},
               ${data.options.installation && priced.installationFee > 0}, ${priced.installationFee}, ${priced.subtotal}, ${priced.total}, ${tokenHash})
             RETURNING id, order_number`;
           for (const i of priced.items) {
@@ -85,10 +81,7 @@ export const placeOrder = createServerFn({ method: "POST" })
           return { id: String(o!.id), orderNumber: String(o!.order_number) };
         }),
       );
-      const returnUrl = `${siteOrigin()}/order/${token}`;
-      const pay = await startPayment({ id: order.id, orderNumber: order.orderNumber, email: data.email, amountKobo: toKobo(priced.total), returnUrl });
-      if (!pay.ok) return { ok: false as const, message: pay.message, orderToken: token };
-      return { ok: true as const, authorizationUrl: pay.authorizationUrl, orderToken: token };
+      return { ok: true as const, orderToken: token };
     } catch (error) {
       if (error instanceof OrderError) return { ok: false as const, message: error.message };
       console.error("Order could not be saved.", error);
@@ -117,7 +110,7 @@ export const getOrderStatus = createServerFn({ method: "POST" })
     if (!found) return null;
     // Check with Paystack when the customer comes back, unless the webhook already confirmed it.
     const ref = String(found.o.payment_reference ?? "");
-    if (found.o.payment_status !== "paid" && ref && (!data.reference || data.reference === ref)) {
+    if (found.o.payment_method === "paystack" && found.o.payment_status !== "paid" && ref && (!data.reference || data.reference === ref)) {
       await confirmPayment(ref);
       found = (await load())!;
     }
@@ -128,6 +121,7 @@ export const getOrderStatus = createServerFn({ method: "POST" })
       customerName: String(o.customer_name),
       email: String(o.email),
       paymentStatus: String(o.payment_status),
+      paymentMethod: String(o.payment_method),
       fulfilmentStatus: String(o.status),
       deliveryMethod: String(o.delivery_method),
       subtotal: Number(o.subtotal),
@@ -145,25 +139,28 @@ export const getOrderStatus = createServerFn({ method: "POST" })
     };
   });
 
-/** Starts a fresh Paystack attempt for an unpaid order after a failed or cancelled payment. */
-export const retryPayment = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => tokenSchema.parse(input))
+/** Customer tells us they've sent the bank transfer; the team then checks the account and confirms. */
+export const reportTransfer = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) =>
+    z.object({ token: z.string().regex(/^[0-9a-f]{64}$/), senderName: z.string().trim().max(120).optional() }).parse(input),
+  )
   .handler(async ({ data }) => {
     const { withDb } = await import("./db.server");
     const { sha256Hex } = await import("./password");
-    const { siteOrigin, startPayment } = await import("./payments.server");
-    const { toKobo } = await import("./order-math");
     const hash = await sha256Hex(data.token);
-    const [o] = await withDb((sql) => sql`SELECT id, order_number, email, total, payment_status, status FROM orders WHERE access_token_hash = ${hash}`);
-    if (!o) return { ok: false as const, message: "We couldn't find that order." };
-    if (o.payment_status === "paid") return { ok: false as const, message: "This order is already paid." };
-    if (o.status === "cancelled") return { ok: false as const, message: "This order was cancelled. Please contact us." };
-    const pay = await startPayment({
-      id: String(o.id),
-      orderNumber: String(o.order_number),
-      email: String(o.email),
-      amountKobo: toKobo(Number(o.total)),
-      returnUrl: `${siteOrigin()}/order/${data.token}`,
-    });
-    return pay.ok ? { ok: true as const, authorizationUrl: pay.authorizationUrl } : { ok: false as const, message: pay.message };
+    return withDb((sql) =>
+      sql.begin(async (tx) => {
+        const [o] = await tx`SELECT id, order_number, total, payment_status, status FROM orders WHERE access_token_hash = ${hash} FOR UPDATE`;
+        if (!o) return { ok: false as const, message: "We couldn't find that order." };
+        if (o.status === "cancelled") return { ok: false as const, message: "This order was cancelled. Please contact us." };
+        if (o.payment_status === "paid") return { ok: true as const };
+        if (o.payment_status === "pending") return { ok: true as const };
+        const reference = `TRF-${o.order_number}-${Date.now().toString(36).toUpperCase()}`;
+        const note = data.senderName ? `Customer says sent by: ${data.senderName}` : "Customer says transfer was sent";
+        await tx`INSERT INTO payments (order_id, provider, reference, amount_kobo, status, channel, gateway_response)
+                 VALUES (${o.id}, 'bank_transfer', ${reference}, ${Math.round(Number(o.total) * 100)}, 'pending', 'bank transfer', ${note})`;
+        await tx`UPDATE orders SET payment_status = 'pending', payment_reference = ${reference}, updated_at = now() WHERE id = ${o.id}`;
+        return { ok: true as const };
+      }),
+    );
   });
